@@ -1,0 +1,28 @@
+Options -MultiViews
+RewriteEngine On
+RewriteBase /
+
+# CORS Headers for assets (v86 emulator needs this)
+<IfModule mod_headers.c>
+    <FilesMatch "\.(js|wasm|iso)$">
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "GET, OPTIONS"
+        Header set Access-Control-Allow-Headers "Range, Content-Type"
+        Header set Access-Control-Expose-Headers "Content-Length, Content-Range, Accept-Ranges"
+    </FilesMatch>
+</IfModule>
+
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+RewriteRule ^ index.html [L]
+
+# ISO files (v86 needs range requests)
+<FilesMatch "\.(iso)$">
+  Header set Cache-Control "public, max-age=31536000"
+  Header set Accept-Ranges "bytes"
+</FilesMatch>
+
+# WASM mime type
+AddType application/wasm .wasm
